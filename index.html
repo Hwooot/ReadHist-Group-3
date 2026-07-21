@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Philippines Historical Map</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0f2fe; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .map-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-color: #cbd5e1; 
+            background-image: url('./ph.svg'); 
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .top-navbar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 500;
+        }
+        .about-trigger-btn {
+            background-color: #007bff;
+            color: white;
+            border: 2px solid white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .about-trigger-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .pin {
+            position: absolute;
+            background-color: #8b0000;
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            transform: translate(-50%, -50%); 
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .pin:hover {
+            background-color: #ff0000;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        .info-window {
+            display: none; 
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 380px; 
+            width: 85%;
+            text-align: center;
+            z-index: 2000;
+        }
+        .info-window h3 {
+            margin: 0 0 12px 0;
+            font-size: 20px;
+        }
+        .landmark-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover; 
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            background-color: #cbd5e1; 
+        }
+        .info-window .content-box {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto; 
+        }
+        .sources-panel {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px dashed #cbd5e1;
+            font-size: 13px;
+            text-align: left;
+        }
+        .sources-title {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .sources-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .sources-list li {
+            margin-bottom: 4px;
+        }
+        .sources-list a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .sources-list a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+        .close-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .close-btn:hover {
+            background-color: #555;
+        }
+        .overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="map-wrapper">
+        <div class="top-navbar">
+            <button class="about-trigger-btn" onclick="showAbout()">ℹ️ About the Project</button>
+        </div>
+
+        <button class="pin" style="top: 34%; left: 46%;" onclick="showLandmark(0)" title="Intramuros">📍</button>
+        <button class="pin" style="top: 66%; left: 59%;" onclick="showLandmark(1)" title="Blood Compact Shrine">📍</button>
+        <button class="pin" style="top: 82%; left: 45%;" onclick="showLandmark(2)" title="Fort Pilar Shrine">📍</button>
+    </div>
+
+    <div id="mapOverlay" class="overlay" onclick="closeBox()"></div>
+
+    <div id="infoWindow" class="info-window">
+        <h3 id="boxTitle">Title</h3>
+        <div id="boxContent" class="content-box">Content details go here.</div>
+        <button class="close-btn" onclick="closeBox()">Close</button>
+    </div>
+
+    <script>
+        const landmarkData = [
+            {
+                name: "Intramuros (Manila)",
+                imgFiles: [
+                    "intramuros-1.jpg", 
+                    "intramuros-2.jpg",
+                    "intramuros-3.jpg"
+                ], 
+                text: "The historic walled city built by Spanish colonizers in 1571. For centuries, it served as the political, military, and religious heart of the Spanish Empire in Asia.",
+                sources: [
+                    "https://britannica.com",
+                    "https://intramuros.gov.ph"
+                ]
+            },
+            {
+                name: "Blood Compact Shrine (Bohol)",
+                imgFiles: [
+                    "blood-compact-1.jpg",
+                ],
+                text: "Located in Tagbilaran City, this site honors the 'Sandugo' performed on March 16, 1565, between Datu Sikatuna and Miguel López de Legazpi, marking the first treaty of friendship between Filipinos and Spaniards.",
+                sources: [
+                    "https://nhcp.gov.ph",
+                    "https://bohol.ph"
+                ]
+            },
+            {
+                name: "Fort Pilar Shrine (Zamboanga City)",
+                imgFiles: [
+                    "fort-pilar-1.jpg",
+                    "fort-pilar-2.jpg",
+                    "fort-pilar-3.jpg"
+                ],
+                text: "A 17th-century military defense fortress built by Spanish forces. Today, it stands as a major historical landmark and an open-air Roman Catholic Marian shrine.",
+                sources: [
+                    "https://nationalmuseum.gov.ph"
+                ]
+            }
+        ];
+
+        const aboutText = "Created by Group 3. Team members: \nMarkham Dylan Winget (Team Leader, Researcher) \nMikael Lorenzo Quizon (Website Developer) \nMalcolm Kenz Prepotente (Researcher, and Tester) \nDeniven Jose Medina (Researcher and Tester) \nAlfredo Victoria (Researcher and Tester)";
+
+        function showLandmark(index) {
+            const data = landmarkData[index];
+            document.getElementById('boxTitle').style.color = '#8b0000';
+            document.getElementById('boxTitle').innerText = data.name;
+            
+            let htmlOutput = `<div style="display: flex; gap: 10px; overflow-x: auto; margin-bottom: 15px;">`;
+            
+            data.imgFiles.forEach(function(imgName) {
+                htmlOutput += `
+                    <img class="landmark-img" src="${imgName}" alt="${data.name}" 
+                         style="min-width: 100%; height: 180px; object-fit: contain; background-color: #f1f5f9; border-radius: 8px;">
+                `;
+            });
+            
+            htmlOutput += `</div>`;
+            
+            htmlOutput += `<p style="margin:0 0 15px 0; text-align:left;">${data.text}</p>`;
+            
+            htmlOutput += `
+                <div class="sources-panel">
+                    <span class="sources-title">Historical Sources:</span>
+                    <ol class="sources-list">
+            `;
+            
+            data.sources.forEach(function(url, listIndex) {
+                htmlOutput += `
+                    <li><a href="${url}" target="_blank">Source Reference ${listIndex + 1}</a></li>
+                `;
+            });
+            
+            htmlOutput += `</ol></div>`;
+            
+            document.getElementById('boxContent').innerHTML = htmlOutput;
+            document.getElementById('infoWindow').style.display = 'block';
+            document.getElementById('mapOverlay').style.display = 'block';
+        }
+
+        function showAbout() {
+            document.getElementById('boxTitle').style.color = '#007bff'; 
+            document.getElementById('boxTitle').innerText = "About This Website";
+            document.getElementById('boxContent').innerText = aboutText;
+            document.getElementById('infoWindow').style.display = 'block';
+            document.getElementById('mapOverlay').style.display = 'block';
+        }
+
+        function closeBox() {
+            document.getElementById('infoWindow').style.display = 'none';
+            document.getElementById('mapOverlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
