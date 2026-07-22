@@ -12,27 +12,44 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e0f2fe; 
+            background-color: #cbd5e1;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         .map-wrapper {
             position: relative;
             width: 100vw;
             height: 100vh;
-            background-color: #cbd5e1; 
-            background-image: url('./ph.svg'); 
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
+        .map-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .map-img {
+            display: block;
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
         .top-navbar {
             position: absolute;
             top: 20px;
             left: 20px;
             z-index: 500;
         }
+
         .about-trigger-btn {
             background-color: #007bff;
             color: white;
@@ -45,10 +62,12 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: background-color 0.2s, transform 0.2s;
         }
+
         .about-trigger-btn:hover {
             background-color: #0056b3;
             transform: scale(1.05);
         }
+
         .pin {
             position: absolute;
             background-color: #8b0000;
@@ -66,10 +85,12 @@
             transform: translate(-50%, -50%); 
             transition: transform 0.2s, background-color 0.2s;
         }
+
         .pin:hover {
             background-color: #ff0000;
             transform: translate(-50%, -50%) scale(1.2);
         }
+
         .info-window {
             display: none; 
             position: absolute;
@@ -85,10 +106,12 @@
             text-align: center;
             z-index: 2000;
         }
+
         .info-window h3 {
             margin: 0 0 12px 0;
             font-size: 20px;
         }
+
         .landmark-img {
             width: 100%;
             height: 180px;
@@ -98,6 +121,7 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.15);
             background-color: #cbd5e1; 
         }
+
         .info-window .content-box {
             font-size: 14px;
             color: #333;
@@ -106,6 +130,7 @@
             max-height: 400px;
             overflow-y: auto; 
         }
+
         .sources-panel {
             margin-top: 15px;
             padding-top: 12px;
@@ -113,28 +138,34 @@
             font-size: 13px;
             text-align: left;
         }
+
         .sources-title {
             font-weight: bold;
             color: #555;
             margin-bottom: 6px;
             display: block;
         }
+
         .sources-list {
             margin: 0;
             padding-left: 20px;
         }
+
         .sources-list li {
             margin-bottom: 4px;
         }
+
         .sources-list a {
             color: #007bff;
             text-decoration: none;
             font-weight: bold;
         }
+
         .sources-list a:hover {
             text-decoration: underline;
             color: #0056b3;
         }
+
         .close-btn {
             background-color: #333;
             color: white;
@@ -145,9 +176,11 @@
             font-size: 14px;
             font-weight: bold;
         }
+
         .close-btn:hover {
             background-color: #555;
         }
+
         .overlay {
             display: none;
             position: absolute;
@@ -167,9 +200,13 @@
             <button class="about-trigger-btn" onclick="showAbout()">ℹ️ About the Project</button>
         </div>
 
-        <button class="pin" style="top: 34%; left: 46%;" onclick="showLandmark(0)" title="Intramuros">📍</button>
-        <button class="pin" style="top: 66%; left: 59%;" onclick="showLandmark(1)" title="Blood Compact Shrine">📍</button>
-        <button class="pin" style="top: 82%; left: 45%;" onclick="showLandmark(2)" title="Fort Pilar Shrine">📍</button>
+        <div class="map-container">
+            <img class="map-img" src="./ph.svg" alt="Philippines Map">
+            
+            <button class="pin" style="top: 41%; left: 46%;" onclick="showLandmark(0)" title="Intramuros">📍</button>
+            <button class="pin" style="top: 67%; left: 62%;" onclick="showLandmark(1)" title="Blood Compact Shrine">📍</button>
+            <button class="pin" style="top: 82%; left: 51%;" onclick="showLandmark(2)" title="Fort Pilar Shrine">📍</button>
+        </div>
     </div>
 
     <div id="mapOverlay" class="overlay" onclick="closeBox()"></div>
